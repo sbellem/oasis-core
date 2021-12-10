@@ -299,7 +299,7 @@ func (app *rootHashApplication) emitEmptyBlock(ctx *tmapi.Context, runtime *root
 	ctx.EmitEvent(
 		tmapi.NewEventBuilder(app.Name()).
 			Attribute(KeyFinalized, cbor.Marshal(tagV)).
-			Attribute(KeyRuntimeID, ValueRuntimeID(runtime.Runtime.ID)),
+			RawAttribute(KeyRuntimeID, ValueRuntimeID(runtime.Runtime.ID)),
 	)
 	return nil
 }
@@ -459,7 +459,7 @@ func (app *rootHashApplication) onNewRuntime(ctx *tmapi.Context, runtime *regist
 	ctx.EmitEvent(
 		tmapi.NewEventBuilder(app.Name()).
 			Attribute(KeyFinalized, cbor.Marshal(tagV)).
-			Attribute(KeyRuntimeID, ValueRuntimeID(runtime.ID)),
+			RawAttribute(KeyRuntimeID, ValueRuntimeID(runtime.ID)),
 	)
 	return nil
 }
@@ -546,7 +546,7 @@ func (app *rootHashApplication) tryFinalizeExecutorCommits(
 		ctx.EmitEvent(
 			tmapi.NewEventBuilder(app.Name()).
 				Attribute(KeyExecutionDiscrepancyDetected, cbor.Marshal(tagV)).
-				Attribute(KeyRuntimeID, ValueRuntimeID(runtime.ID)),
+				RawAttribute(KeyRuntimeID, ValueRuntimeID(runtime.ID)),
 		)
 
 		// We may also be able to already perform discrepancy resolution, check if this is possible
@@ -609,7 +609,7 @@ func (app *rootHashApplication) tryFinalizeExecutorCommits(
 							Caller: msg.Caller,
 							Tag:    msg.Tag,
 						}).
-						Attribute(KeyRuntimeID, ValueRuntimeID(rtState.Runtime.ID)),
+						RawAttribute(KeyRuntimeID, ValueRuntimeID(rtState.Runtime.ID)),
 				)
 			}
 			err = state.SetIncomingMessageQueueMeta(ctx, rtState.Runtime.ID, meta)
@@ -722,7 +722,7 @@ func (app *rootHashApplication) tryFinalizeExecutorCommits(
 		ctx.EmitEvent(
 			tmapi.NewEventBuilder(app.Name()).
 				Attribute(KeyFinalized, cbor.Marshal(tagV)).
-				Attribute(KeyRuntimeID, ValueRuntimeID(rtState.Runtime.ID)),
+				RawAttribute(KeyRuntimeID, ValueRuntimeID(rtState.Runtime.ID)),
 		)
 
 		return nil
