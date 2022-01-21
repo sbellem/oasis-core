@@ -752,7 +752,7 @@ EventLoop:
 					continue EventLoop
 				}
 				runtimeID = &common.Namespace{}
-				if err := runtimeID.UnmarshalBase64(val); err != nil {
+				if err := runtimeID.UnmarshalBinary(val); err != nil {
 					errs = multierror.Append(errs, fmt.Errorf("roothash: corrupt runtime ID: %w", err))
 					continue EventLoop
 				}

@@ -190,7 +190,7 @@ func (app *rootHashApplication) executorCommit(
 		ctx.EmitEvent(
 			abciAPI.NewEventBuilder(app.Name()).
 				Attribute(KeyExecutorCommitted, cbor.Marshal(evV)).
-				Attribute(KeyRuntimeID, ValueRuntimeID(cc.ID)),
+				RawAttribute(KeyRuntimeID, ValueRuntimeID(cc.ID)),
 		)
 	}
 
