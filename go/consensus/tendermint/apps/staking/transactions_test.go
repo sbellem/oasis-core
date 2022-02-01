@@ -459,9 +459,23 @@ func TestWithdraw(t *testing.T) {
 			staking.ErrInsufficientBalance,
 		},
 		{
+			"should fail if amount is below minimum transfer amount",
+			&staking.ConsensusParameters{
+				MinTransferAmount: *quantity.NewFromUint64(25),
+				MaxAllowances:     1,
+			},
+			pk2,
+			&staking.Withdraw{
+				From:   addr1,
+				Amount: *quantity.NewFromUint64(24),
+			},
+			staking.ErrUnderMinTransferAmount,
+		},
+		{
 			"should succeed",
 			&staking.ConsensusParameters{
-				MaxAllowances: 1,
+				MinTransferAmount: *quantity.NewFromUint64(25),
+				MaxAllowances:     1,
 			},
 			pk2,
 			&staking.Withdraw{
@@ -479,7 +493,8 @@ func TestWithdraw(t *testing.T) {
 		{
 			"should succeed",
 			&staking.ConsensusParameters{
-				MaxAllowances: 1,
+				MinTransferAmount: *quantity.NewFromUint64(25),
+				MaxAllowances:     1,
 			},
 			pk3,
 			&staking.Withdraw{
