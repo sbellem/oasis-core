@@ -16,6 +16,7 @@ import (
 	beacon "github.com/oasisprotocol/oasis-core/go/beacon/api"
 	"github.com/oasisprotocol/oasis-core/go/common"
 	"github.com/oasisprotocol/oasis-core/go/common/cbor"
+	"github.com/oasisprotocol/oasis-core/go/common/crypto/hash"
 	"github.com/oasisprotocol/oasis-core/go/common/crypto/signature"
 	"github.com/oasisprotocol/oasis-core/go/common/entity"
 	"github.com/oasisprotocol/oasis-core/go/common/logging"
@@ -481,6 +482,14 @@ func updateRegistryRuntime(old *v4Runtime) (registry.Runtime, error) {
 	new := registry.Runtime{
 		Versioned:   cbor.NewVersioned(registry.LatestRuntimeDescriptorVersion),
 		Constraints: make(map[scheduler.CommitteeKind]map[scheduler.Role]registry.SchedulingConstraints),
+		Deployments: []*registry.VersionInfo{
+			{
+				Version:    old.Version.Version,
+				ValidFrom:  0, // Fix manually if you want something more specific.
+				TEE:        old.Version.TEE,
+				BinaryHash: hash.NewFromBytes(nil),
+			},
+		},
 
 		// Everything else below is just copied over unchanged.
 
@@ -489,7 +498,6 @@ func updateRegistryRuntime(old *v4Runtime) (registry.Runtime, error) {
 		Genesis:         old.Genesis,
 		Kind:            old.Kind,
 		TEEHardware:     old.TEEHardware,
-		Version:         old.Version,
 		KeyManager:      old.KeyManager,
 		Executor:        old.Executor,
 		TxnScheduler:    old.TxnScheduler,

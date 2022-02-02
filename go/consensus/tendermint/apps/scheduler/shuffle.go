@@ -194,7 +194,7 @@ func (app *schedulerApplication) electCommittee( //nolint: gocyclo
 	// Determine the committee size, and pre-filter the node-list based
 	// on eligibility, entity stake and other criteria.
 
-	var isSuitableFn func(*api.Context, *node.Node, *registry.Runtime) bool
+	var isSuitableFn func(*api.Context, *node.Node, *registry.Runtime, beacon.EpochTime) bool
 	groupSizes := make(map[scheduler.Role]int)
 	switch kind {
 	case scheduler.KindComputeExecutor:
@@ -231,7 +231,7 @@ func (app *schedulerApplication) electCommittee( //nolint: gocyclo
 			}
 		}
 		// Check general node compatibility.
-		if !isSuitableFn(ctx, n, rt) {
+		if !isSuitableFn(ctx, n, rt, epoch) {
 			continue
 		}
 

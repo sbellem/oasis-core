@@ -308,15 +308,22 @@ func (app *schedulerApplication) EndBlock(ctx *api.Context, req types.RequestEnd
 	return resp, nil
 }
 
-func (app *schedulerApplication) isSuitableExecutorWorker(ctx *api.Context, n *node.Node, rt *registry.Runtime) bool {
+func (app *schedulerApplication) isSuitableExecutorWorker(ctx *api.Context, n *node.Node, rt *registry.Runtime, now beacon.EpochTime) bool {
 	if !n.HasRoles(node.RoleComputeWorker) {
 		return false
 	}
+
+	activeDeployment := rt.ActiveDeployment(now)
+	if activeDeployment == nil {
+		return false
+	}
+
 	for _, nrt := range n.Runtimes {
 		if !nrt.ID.Equal(&rt.ID) {
 			continue
 		}
-		if nrt.Version.MaskNonMajor() != rt.Version.Version.MaskNonMajor() {
+
+		if nrt.Version.ToU64() != activeDeployment.Version.ToU64() {
 			return false
 		}
 		switch rt.TEEHardware {
@@ -332,7 +339,7 @@ func (app *schedulerApplication) isSuitableExecutorWorker(ctx *api.Context, n *n
 			if nrt.Capabilities.TEE.Hardware != rt.TEEHardware {
 				return false
 			}
-			if err := nrt.Capabilities.TEE.Verify(ctx.Now(), rt.Version.TEE); err != nil {
+			if err := nrt.Capabilities.TEE.Verify(ctx.Now(), activeDeployment.TEE); err != nil {
 				ctx.Logger().Warn("failed to verify node TEE attestaion",
 					"err", err,
 					"node", n,
