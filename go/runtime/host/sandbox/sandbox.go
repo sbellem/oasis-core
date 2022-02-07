@@ -15,6 +15,7 @@ import (
 
 	"github.com/oasisprotocol/oasis-core/go/common"
 	cmnBackoff "github.com/oasisprotocol/oasis-core/go/common/backoff"
+	"github.com/oasisprotocol/oasis-core/go/common/crypto/hash"
 	"github.com/oasisprotocol/oasis-core/go/common/logging"
 	"github.com/oasisprotocol/oasis-core/go/common/pubsub"
 	"github.com/oasisprotocol/oasis-core/go/common/version"
@@ -73,6 +74,14 @@ func (p *provisioner) NewRuntime(ctx context.Context, cfg host.Config) (host.Run
 		notifier: pubsub.NewBroker(false),
 		logger:   p.cfg.Logger.With("runtime_id", cfg.RuntimeID),
 	}
+
+	// Calculate the digest of the runtime binary.
+	b, err := os.ReadFile(cfg.Path)
+	if err != nil {
+		return nil, fmt.Errorf("runtime/host/sandbox: failed to read binary: %w", err)
+	}
+	r.digest = hash.NewFromBytes(b)
+
 	return r, nil
 }
 
@@ -94,6 +103,7 @@ type sandboxedRuntime struct {
 	ctrlCh chan interface{}
 
 	started  bool
+	digest   hash.Hash
 	process  process.Process
 	conn     protocol.Connection
 	notifier *pubsub.Broker
@@ -104,6 +114,11 @@ type sandboxedRuntime struct {
 // Implements host.Runtime.
 func (r *sandboxedRuntime) ID() common.Namespace {
 	return r.rtCfg.RuntimeID
+}
+
+// Implements host.Runtime.
+func (r *sandboxedRuntime) Digest() hash.Hash {
+	return r.digest
 }
 
 // Implements host.Runtime.

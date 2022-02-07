@@ -5,6 +5,7 @@ import (
 	"context"
 
 	"github.com/oasisprotocol/oasis-core/go/common"
+	"github.com/oasisprotocol/oasis-core/go/common/crypto/hash"
 	"github.com/oasisprotocol/oasis-core/go/common/node"
 	"github.com/oasisprotocol/oasis-core/go/common/pubsub"
 	"github.com/oasisprotocol/oasis-core/go/common/version"
@@ -44,6 +45,9 @@ type Provisioner interface {
 type Runtime interface {
 	// ID is the runtime identifier.
 	ID() common.Namespace
+
+	// Digest is the cryptographic digest of the runtime binary.
+	Digest() hash.Hash
 
 	// GetInfo retrieves the runtime information.
 	GetInfo(ctx context.Context) (*protocol.RuntimeInfoResponse, error)

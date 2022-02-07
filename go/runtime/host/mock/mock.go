@@ -45,6 +45,13 @@ func (r *runtime) ID() common.Namespace {
 }
 
 // Implements host.Runtime.
+func (r *runtime) Digest() hash.Hash {
+	var h hash.Hash
+	h.Empty()
+	return h
+}
+
+// Implements host.Runtime.
 func (r *runtime) GetInfo(ctx context.Context) (rsp *protocol.RuntimeInfoResponse, err error) {
 	return &protocol.RuntimeInfoResponse{
 		ProtocolVersion: version.RuntimeHostProtocol,
