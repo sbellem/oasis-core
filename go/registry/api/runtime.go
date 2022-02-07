@@ -505,11 +505,15 @@ func (r *Runtime) ValidateDeployments(now beacon.EpochTime) error {
 	// if:
 	//  * There is at least one entry present.
 	//  * All of the entries are well-formed.
+	//  * There is at most, one expired or active entry.
 	//  * There is at most, one future entry.
 	//  * The versions field increases as versions are deployed.
 
 	if len(r.Deployments) == 0 {
 		return fmt.Errorf("%w: no deployments", ErrInvalidArgument)
+	}
+	if len(r.Deployments) > 2 {
+		return fmt.Errorf("%w: too many deployments", ErrInvalidArgument)
 	}
 
 	deployments := make([]*VersionInfo, len(r.Deployments))

@@ -1039,13 +1039,21 @@ func VerifyRuntime( // nolint: gocyclo
 	// Validate the deployments.  This also handles validating that the
 	// appropriate TEE configuration is present in each deployment.
 	//
-	// XXX: Unless isGenesis, forbid immediate deployment.
 	if err := rt.ValidateDeployments(now); err != nil {
 		logger.Error("RegisterRuntime: invalid deployments",
 			"runtime_id", rt.ID,
 			"err", err,
 		)
 		return err // ValidateDeployments handles wrapping, yay.
+	}
+	if !isGenesis {
+		// Unless isGenesis, forbid immediate deployment.
+		if rt.ActiveDeployment(now) != nil {
+			logger.Error("RegisterRuntime: trying to deploy immediately",
+				"runtime_id", rt.ID,
+			)
+			return ErrRuntimeUpdateNotAllowed
+		}
 	}
 
 	// Ensure there's a valid admission policy.
