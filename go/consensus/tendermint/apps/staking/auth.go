@@ -29,7 +29,7 @@ func (app *stakingApplication) GetSignerNonce(ctx context.Context, req *consensu
 
 // Implements api.TransactionAuthHandler.
 func (app *stakingApplication) AuthenticateTx(ctx *api.Context, tx *transaction.Transaction) error {
-	return stakingState.AuthenticateAndPayFees(ctx, ctx.TxSigner(), tx.Nonce, tx.Fee)
+	return stakingState.AuthenticateAndPayFees(ctx, ctx.TxSigner(), tx.Nonce, tx.Fee, tx.Method)
 }
 
 // Implements api.TransactionAuthHandler.

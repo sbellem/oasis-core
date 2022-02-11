@@ -34,6 +34,7 @@ func AuthenticateAndPayFees(
 	signer signature.PublicKey,
 	nonce uint64,
 	fee *transaction.Fee,
+	method transaction.MethodName,
 ) error {
 	state := NewMutableState(ctx.State())
 
@@ -75,8 +76,13 @@ func AuthenticateAndPayFees(
 	if err != nil {
 		return fmt.Errorf("failed to fetch staking consensus parameters: %w", err)
 	}
-	if err = needed.Add(&params.MinTransactBalance); err != nil {
-		return fmt.Errorf("adding MinTransactBalance to fee: %w", err)
+	var minTransactBalanceExempt bool
+	if params.MinTransactBalanceExemptMethods[method] {
+		minTransactBalanceExempt = true
+	} else {
+		if err = needed.Add(&params.MinTransactBalance); err != nil {
+			return fmt.Errorf("adding MinTransactBalance to fee: %w", err)
+		}
 	}
 
 	// Check against minimum balance plus fee.
@@ -85,6 +91,7 @@ func AuthenticateAndPayFees(
 			"account_addr", addr,
 			"account_balance", account.General.Balance,
 			"min_transact_balance", params.MinTransactBalance,
+			"min_transact_balance_exempt", minTransactBalanceExempt,
 			"fee_amount", fee.Amount,
 		)
 		return staking.ErrBalanceTooLow

@@ -1103,6 +1103,7 @@ type ConsensusParameters struct { // nolint: maligned
 	GasCosts                          transaction.Costs                   `json:"gas_costs,omitempty"`
 	MinDelegationAmount               quantity.Quantity                   `json:"min_delegation"`
 	MinTransactBalance                quantity.Quantity                   `json:"min_transact_balance"`
+	MinTransactBalanceExemptMethods   map[transaction.MethodName]bool     `json:"min_transact_balance_exempt_methods"`
 
 	DisableTransfers       bool             `json:"disable_transfers,omitempty"`
 	DisableDelegation      bool             `json:"disable_delegation,omitempty"`

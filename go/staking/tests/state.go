@@ -5,6 +5,7 @@ import (
 
 	beacon "github.com/oasisprotocol/oasis-core/go/beacon/api"
 	"github.com/oasisprotocol/oasis-core/go/common/quantity"
+	"github.com/oasisprotocol/oasis-core/go/consensus/api/transaction"
 	"github.com/oasisprotocol/oasis-core/go/staking/api"
 )
 
@@ -45,8 +46,14 @@ func GenesisState() api.Genesis {
 					FreezeInterval: 1,
 				},
 			},
-			MinDelegationAmount:     *quantity.NewFromUint64(10),
-			MinTransactBalance:      *quantity.NewFromUint64(10),
+			MinDelegationAmount: *quantity.NewFromUint64(10),
+			MinTransactBalance:  *quantity.NewFromUint64(10),
+			MinTransactBalanceExemptMethods: map[transaction.MethodName]bool{
+				"registry.RegisterNode":            true,
+				"roothash.ExecutorCommit":          true,
+				"roothash.ExecutorProposerTimeout": true,
+				"roothash.Evidence":                true,
+			},
 			MaxAllowances:           32,
 			FeeSplitWeightVote:      *quantity.NewFromUint64(1),
 			RewardFactorEpochSigned: *quantity.NewFromUint64(1),
