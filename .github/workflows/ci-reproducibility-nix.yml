@@ -1,0 +1,44 @@
+# NOTE: This name appears in GitHub's Checks API and in workflow's status badge.
+name: ci-reproducibility-nix
+
+# Trigger the workflow when:
+on:
+  push:
+    branches:
+      - master
+      - stable/*
+      - nix*
+  # Besides pushes on the branches above, also check every day at 00:00 UTC.
+  schedule:
+    - cron: "0 0 * * *"
+
+jobs:
+
+  check-reproducible-build:
+    # NOTE: This name appears in GitHub's Checks API.
+    name: check-reproducibility-with-nix
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v16
+        with:
+          install_url: https://github.com/numtide/nix-unstable-installer/releases/download/nix-2.7.0pre20220225_fd4b693/install
+      - run: nix --version
+      - run: nix build
+      - run: nix build --rebuild
+      - run: shasum -a 512256 -b result/bin/cargo-elf2sgxs
+      - run: sha256sum result/bin/cargo-elf2sgxs
+
+      - name: Shasum check
+        run: |
+          # FIXME shasum of local build does not match the one on github ci
+          #       perhaps some dependencies are not pinned
+          #echo "48d12f80ff734c944d5c44b639069325e8e6b986d9c16c5b5cbae8a3e1eee319 *result/bin/cargo-elf2sgxs" | shasum --algorithm 512256 --binary --strict --check
+          echo "48d12f80ff734c944d5c44b639069325e8e6b986d9c16c5b5cbae8a3e1eee319 *result/bin/cargo-elf2sgxs" | shasum --algorithm 512256 --binary --strict --check
+      - run: nix flake check
+      - run: nix flake metadata
+      - run: nix flake show
+      - run: ls -l result
