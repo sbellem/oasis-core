@@ -34,9 +34,6 @@ jobs:
 
       - name: Shasum check
         run: |
-          # FIXME shasum of local build does not match the one on github ci
-          #       perhaps some dependencies are not pinned
-          #echo "48d12f80ff734c944d5c44b639069325e8e6b986d9c16c5b5cbae8a3e1eee319 *result/bin/cargo-elf2sgxs" | shasum --algorithm 512256 --binary --strict --check
           echo "48d12f80ff734c944d5c44b639069325e8e6b986d9c16c5b5cbae8a3e1eee319 *result/bin/cargo-elf2sgxs" | shasum --algorithm 512256 --binary --strict --check
       - run: nix flake check
       - run: nix flake metadata
