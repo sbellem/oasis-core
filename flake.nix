@@ -30,7 +30,7 @@
               name = "${pname}-${version}";
             };
 
-            cargoSha256 = "sha256-K8i9l/HRUovIRcKWs/YGeaw4BYKOlwVLmiJzJxrO8KY=";
+            cargoSha256 = "sha256-4+3XSRcETVDdUUyMU7hrMq+gyo8bTgV38XLwo5cLzpk=";
 
             rust_toolchain = rust-bin.fromRustupToolchainFile ./rust-toolchain;
 
