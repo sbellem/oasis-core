@@ -27,8 +27,8 @@ jobs:
         with:
           install_url: https://github.com/numtide/nix-unstable-installer/releases/download/nix-2.7.0pre20220225_fd4b693/install
       - run: nix --version
-      - run: nix build .#nosgx
-      - run: nix build --rebuild .#nosgx
+      - run: nix build
+      - run: nix build --rebuild
       - run: shasum -a 512256 -b result/bin/cargo-elf2sgxs
       - run: sha256sum result/bin/cargo-elf2sgxs
 
